@@ -59,7 +59,7 @@ architecture Behavioral of ram is
 begin    
     process(clk) is
         -- synthesis translate_off
-        variable L : line;
+        --variable L : line;
         -- synthesis translate_on
     begin
         if rising_edge(clk) then
@@ -71,21 +71,21 @@ begin
                     dout <= din;
                     
                     -- synthesis translate_off
-                    write(L, string'("RAM WRITE: addr="));
-                    write(L, to_integer(unsigned(addr)));
-                    write(L, string'(" data=0x"));
-                    hwrite(L, din);
-                    writeline(output, L);
+--                    write(L, string'("RAM WRITE: addr="));
+--                    write(L, to_integer(unsigned(addr)));
+--                    write(L, string'(" data=0x"));
+--                    hwrite(L, din);
+--                    writeline(output, L);
                     -- synthesis translate_on
                 else
                     dout <= mem(to_integer(unsigned(addr)));
                     
                     -- synthesis translate_off
-                    write(L, string'("RAM READ: addr="));
-                    write(L, to_integer(unsigned(addr)));
-                    write(L, string'(" data= 0x"));
-                    write(L, mem(to_integer(unsigned(addr))));
-                    writeline(output, L);
+--                    write(L, string'("RAM READ: addr="));
+--                    write(L, to_integer(unsigned(addr)));
+--                    write(L, string'(" data= 0x"));
+--                    write(L, mem(to_integer(unsigned(addr))));
+--                    writeline(output, L);
                     -- synthesis translate_on
                 end if;
             end if;
