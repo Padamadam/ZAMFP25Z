@@ -1,0 +1,336 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0xF189227406B8FAF",
+      "device": "xc7s25csga225-1",
+      "gen_directory": "../../../../ZAMFP.gen/sources_1/bd/system",
+      "name": "system",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2025.1",
+      "validated": "true"
+    },
+    "design_tree": {
+      "ram_0": "",
+      "uart_0": "",
+      "uart_ram_ctrl_0": ""
+    },
+    "ports": {
+      "clk": {
+        "type": "clk",
+        "direction": "I",
+        "parameters": {
+          "ASSOCIATED_RESET": {
+            "value": "rst",
+            "value_src": "default"
+          },
+          "CLK_DOMAIN": {
+            "value": "system_clk",
+            "value_src": "default"
+          },
+          "FREQ_HZ": {
+            "value": "50000000"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default"
+          }
+        }
+      },
+      "rst": {
+        "direction": "I"
+      },
+      "tx_0": {
+        "direction": "O"
+      },
+      "rx_0": {
+        "direction": "I"
+      }
+    },
+    "components": {
+      "ram_0": {
+        "vlnv": "xilinx.com:module_ref:ram:1.0",
+        "ip_revision": "1",
+        "xci_name": "system_ram_0_0",
+        "xci_path": "ip\\system_ram_0_0\\system_ram_0_0.xci",
+        "inst_hier_path": "ram_0",
+        "has_run_ip_tcl": "true",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "ram",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "clk": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "rst",
+                "value_src": "constant"
+              },
+              "FREQ_HZ": {
+                "value": "50000000",
+                "value_src": "user_prop"
+              },
+              "CLK_DOMAIN": {
+                "value": "system_clk",
+                "value_src": "default_prop"
+              }
+            }
+          },
+          "rst": {
+            "type": "rst",
+            "direction": "I"
+          },
+          "addr": {
+            "direction": "I",
+            "left": "6",
+            "right": "0"
+          },
+          "write_en": {
+            "direction": "I"
+          },
+          "din": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "dout": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          }
+        }
+      },
+      "uart_0": {
+        "vlnv": "xilinx.com:module_ref:uart:1.0",
+        "ip_revision": "1",
+        "xci_name": "system_uart_0_0",
+        "xci_path": "ip\\system_uart_0_0\\system_uart_0_0.xci",
+        "inst_hier_path": "uart_0",
+        "has_run_ip_tcl": "true",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "uart",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "clock": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "reset",
+                "value_src": "constant"
+              },
+              "FREQ_HZ": {
+                "value": "50000000",
+                "value_src": "user_prop"
+              },
+              "CLK_DOMAIN": {
+                "value": "system_clk",
+                "value_src": "default_prop"
+              }
+            }
+          },
+          "reset": {
+            "type": "rst",
+            "direction": "I"
+          },
+          "data_in": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "data_in_stb": {
+            "direction": "I"
+          },
+          "data_in_ack": {
+            "direction": "O"
+          },
+          "data_out": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "data_out_stb": {
+            "direction": "O"
+          },
+          "tx": {
+            "direction": "O"
+          },
+          "rx": {
+            "direction": "I"
+          }
+        }
+      },
+      "uart_ram_ctrl_0": {
+        "vlnv": "xilinx.com:module_ref:uart_ram_ctrl:1.0",
+        "ip_revision": "1",
+        "xci_name": "system_uart_ram_ctrl_0_0",
+        "xci_path": "ip\\system_uart_ram_ctrl_0_0\\system_uart_ram_ctrl_0_0.xci",
+        "inst_hier_path": "uart_ram_ctrl_0",
+        "has_run_ip_tcl": "true",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "uart_ram_ctrl",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "clk": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "ASSOCIATED_RESET": {
+                "value": "rst",
+                "value_src": "constant"
+              },
+              "FREQ_HZ": {
+                "value": "50000000",
+                "value_src": "user_prop"
+              },
+              "CLK_DOMAIN": {
+                "value": "system_clk",
+                "value_src": "default_prop"
+              }
+            }
+          },
+          "rst": {
+            "type": "rst",
+            "direction": "I"
+          },
+          "uart_data_in": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "uart_data_in_stb": {
+            "direction": "I"
+          },
+          "uart_data_out": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "uart_data_out_stb": {
+            "direction": "O"
+          },
+          "uart_data_out_ack": {
+            "direction": "I"
+          },
+          "ram_addr": {
+            "direction": "O",
+            "left": "6",
+            "right": "0"
+          },
+          "ram_write_en": {
+            "direction": "O"
+          },
+          "ram_din": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "ram_dout": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          }
+        }
+      }
+    },
+    "nets": {
+      "clk_1": {
+        "ports": [
+          "clk",
+          "uart_ram_ctrl_0/clk",
+          "uart_0/clock",
+          "ram_0/clk"
+        ]
+      },
+      "ram_0_dout": {
+        "ports": [
+          "ram_0/dout",
+          "uart_ram_ctrl_0/ram_dout"
+        ]
+      },
+      "rst_1": {
+        "ports": [
+          "rst",
+          "uart_ram_ctrl_0/rst",
+          "ram_0/rst",
+          "uart_0/reset"
+        ]
+      },
+      "rx_0_1": {
+        "ports": [
+          "rx_0",
+          "uart_0/rx"
+        ]
+      },
+      "uart_0_data_in_ack": {
+        "ports": [
+          "uart_0/data_in_ack",
+          "uart_ram_ctrl_0/uart_data_out_ack"
+        ]
+      },
+      "uart_0_data_out": {
+        "ports": [
+          "uart_0/data_out",
+          "uart_ram_ctrl_0/uart_data_in"
+        ]
+      },
+      "uart_0_data_out_stb": {
+        "ports": [
+          "uart_0/data_out_stb",
+          "uart_ram_ctrl_0/uart_data_in_stb"
+        ]
+      },
+      "uart_0_tx": {
+        "ports": [
+          "uart_0/tx",
+          "tx_0"
+        ]
+      },
+      "uart_ram_ctrl_0_ram_addr": {
+        "ports": [
+          "uart_ram_ctrl_0/ram_addr",
+          "ram_0/addr"
+        ]
+      },
+      "uart_ram_ctrl_0_ram_din": {
+        "ports": [
+          "uart_ram_ctrl_0/ram_din",
+          "ram_0/din"
+        ]
+      },
+      "uart_ram_ctrl_0_ram_write_en": {
+        "ports": [
+          "uart_ram_ctrl_0/ram_write_en",
+          "ram_0/write_en"
+        ]
+      },
+      "uart_ram_ctrl_0_uart_data_out": {
+        "ports": [
+          "uart_ram_ctrl_0/uart_data_out",
+          "uart_0/data_in"
+        ]
+      },
+      "uart_ram_ctrl_0_uart_data_out_stb": {
+        "ports": [
+          "uart_ram_ctrl_0/uart_data_out_stb",
+          "uart_0/data_in_stb"
+        ]
+      }
+    }
+  }
+}

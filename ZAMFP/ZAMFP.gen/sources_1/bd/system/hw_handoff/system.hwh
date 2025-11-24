@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<EDKSYSTEM EDWVERSION="1.2" TIMESTAMP="Sun Nov 23 16:20:55 2025" VIVADOVERSION="2025.1">
+
+  <SYSTEMINFO ARCH="spartan7" BOARD="digilentinc.com:cmod-s7-25:part0:1.0" DEVICE="7s25" NAME="system" PACKAGE="csga225" SPEEDGRADE="-1"/>
+
+  <EXTERNALPORTS>
+    <PORT CLKFREQUENCY="50000000" DIR="I" NAME="clk" SIGIS="clk" SIGNAME="External_Ports_clk">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="uart_ram_ctrl_0" PORT="clk"/>
+        <CONNECTION INSTANCE="uart_0" PORT="clock"/>
+        <CONNECTION INSTANCE="ram_0" PORT="clk"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT DIR="I" NAME="rst" SIGIS="undef" SIGNAME="External_Ports_rst">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="uart_ram_ctrl_0" PORT="rst"/>
+        <CONNECTION INSTANCE="ram_0" PORT="rst"/>
+        <CONNECTION INSTANCE="uart_0" PORT="reset"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT DIR="I" NAME="rx_0" SIGIS="undef" SIGNAME="External_Ports_rx_0">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="uart_0" PORT="rx"/>
+      </CONNECTIONS>
+    </PORT>
+    <PORT DIR="O" NAME="tx_0" SIGIS="undef" SIGNAME="uart_0_tx">
+      <CONNECTIONS>
+        <CONNECTION INSTANCE="uart_0" PORT="tx"/>
+      </CONNECTIONS>
+    </PORT>
+  </EXTERNALPORTS>
+
+  <EXTERNALINTERFACES/>
+
+  <MODULES>
+    <MODULE COREREVISION="1" FULLNAME="/ram_0" HWVERSION="1.0" INSTANCE="ram_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="ram" VLNV="xilinx.com:module_ref:ram:1.0">
+      <DOCUMENTS/>
+      <PARAMETERS>
+        <PARAMETER NAME="ADDR_WIDTH" VALUE="7"/>
+        <PARAMETER NAME="DATA_WIDTH" VALUE="8"/>
+        <PARAMETER NAME="Component_Name" VALUE="system_ram_0_0"/>
+        <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
+      </PARAMETERS>
+      <PORTS>
+        <PORT DIR="I" LEFT="6" NAME="addr" RIGHT="0" SIGIS="undef" SIGNAME="uart_ram_ctrl_0_ram_addr">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_ram_ctrl_0" PORT="ram_addr"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT CLKFREQUENCY="50000000" DIR="I" NAME="clk" SIGIS="clk" SIGNAME="External_Ports_clk">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="clk"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="7" NAME="din" RIGHT="0" SIGIS="undef" SIGNAME="uart_ram_ctrl_0_ram_din">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_ram_ctrl_0" PORT="ram_din"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="7" NAME="dout" RIGHT="0" SIGIS="undef" SIGNAME="ram_0_dout">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_ram_ctrl_0" PORT="ram_dout"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="rst" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="External_Ports_rst">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="rst"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="write_en" SIGIS="undef" SIGNAME="uart_ram_ctrl_0_ram_write_en">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_ram_ctrl_0" PORT="ram_write_en"/>
+          </CONNECTIONS>
+        </PORT>
+      </PORTS>
+      <BUSINTERFACES/>
+    </MODULE>
+    <MODULE COREREVISION="1" FULLNAME="/uart_0" HWVERSION="1.0" INSTANCE="uart_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="uart" VLNV="xilinx.com:module_ref:uart:1.0">
+      <DOCUMENTS/>
+      <PARAMETERS>
+        <PARAMETER NAME="baud" VALUE="115200"/>
+        <PARAMETER NAME="clock_frequency" VALUE="50000000"/>
+        <PARAMETER NAME="Component_Name" VALUE="system_uart_0_0"/>
+        <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
+      </PARAMETERS>
+      <PORTS>
+        <PORT CLKFREQUENCY="50000000" DIR="I" NAME="clock" SIGIS="clk" SIGNAME="External_Ports_clk">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="clk"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="7" NAME="data_in" RIGHT="0" SIGIS="undef" SIGNAME="uart_ram_ctrl_0_uart_data_out">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_ram_ctrl_0" PORT="uart_data_out"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="data_in_ack" SIGIS="undef" SIGNAME="uart_0_data_in_ack">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_ram_ctrl_0" PORT="uart_data_out_ack"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="data_in_stb" SIGIS="undef" SIGNAME="uart_ram_ctrl_0_uart_data_out_stb">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_ram_ctrl_0" PORT="uart_data_out_stb"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="7" NAME="data_out" RIGHT="0" SIGIS="undef" SIGNAME="uart_0_data_out">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_ram_ctrl_0" PORT="uart_data_in"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="data_out_stb" SIGIS="undef" SIGNAME="uart_0_data_out_stb">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_ram_ctrl_0" PORT="uart_data_in_stb"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="reset" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="External_Ports_rst">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="rst"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="rx" SIGIS="undef" SIGNAME="External_Ports_rx_0">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="rx_0"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="tx" SIGIS="undef" SIGNAME="uart_0_tx">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="tx_0"/>
+          </CONNECTIONS>
+        </PORT>
+      </PORTS>
+      <BUSINTERFACES/>
+    </MODULE>
+    <MODULE COREREVISION="1" FULLNAME="/uart_ram_ctrl_0" HWVERSION="1.0" INSTANCE="uart_ram_ctrl_0" IPTYPE="PERIPHERAL" IS_ENABLE="1" MODCLASS="PERIPHERAL" MODTYPE="uart_ram_ctrl" VLNV="xilinx.com:module_ref:uart_ram_ctrl:1.0">
+      <DOCUMENTS/>
+      <PARAMETERS>
+        <PARAMETER NAME="Component_Name" VALUE="system_uart_ram_ctrl_0_0"/>
+        <PARAMETER NAME="EDK_IPTYPE" VALUE="PERIPHERAL"/>
+      </PARAMETERS>
+      <PORTS>
+        <PORT CLKFREQUENCY="50000000" DIR="I" NAME="clk" SIGIS="clk" SIGNAME="External_Ports_clk">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="clk"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="6" NAME="ram_addr" RIGHT="0" SIGIS="undef" SIGNAME="uart_ram_ctrl_0_ram_addr">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="ram_0" PORT="addr"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="7" NAME="ram_din" RIGHT="0" SIGIS="undef" SIGNAME="uart_ram_ctrl_0_ram_din">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="ram_0" PORT="din"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="7" NAME="ram_dout" RIGHT="0" SIGIS="undef" SIGNAME="ram_0_dout">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="ram_0" PORT="dout"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="ram_write_en" SIGIS="undef" SIGNAME="uart_ram_ctrl_0_ram_write_en">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="ram_0" PORT="write_en"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="rst" POLARITY="ACTIVE_LOW" SIGIS="rst" SIGNAME="External_Ports_rst">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="External_Ports" PORT="rst"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" LEFT="7" NAME="uart_data_in" RIGHT="0" SIGIS="undef" SIGNAME="uart_0_data_out">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_0" PORT="data_out"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="uart_data_in_stb" SIGIS="undef" SIGNAME="uart_0_data_out_stb">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_0" PORT="data_out_stb"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" LEFT="7" NAME="uart_data_out" RIGHT="0" SIGIS="undef" SIGNAME="uart_ram_ctrl_0_uart_data_out">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_0" PORT="data_in"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="I" NAME="uart_data_out_ack" SIGIS="undef" SIGNAME="uart_0_data_in_ack">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_0" PORT="data_in_ack"/>
+          </CONNECTIONS>
+        </PORT>
+        <PORT DIR="O" NAME="uart_data_out_stb" SIGIS="undef" SIGNAME="uart_ram_ctrl_0_uart_data_out_stb">
+          <CONNECTIONS>
+            <CONNECTION INSTANCE="uart_0" PORT="data_in_stb"/>
+          </CONNECTIONS>
+        </PORT>
+      </PORTS>
+      <BUSINTERFACES/>
+    </MODULE>
+  </MODULES>
+
+</EDKSYSTEM>

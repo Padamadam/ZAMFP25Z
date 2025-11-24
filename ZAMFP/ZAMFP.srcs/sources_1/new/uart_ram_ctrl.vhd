@@ -22,6 +22,9 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
+use std.textio.all;
+use ieee.std_logic_textio.all;
+
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 use IEEE.NUMERIC_STD.ALL;
@@ -67,7 +70,7 @@ architecture Behavioral of uart_ram_ctrl is
         ST_SEND_HDR,
         ST_SEND_DATA
         );
-         
+                 
     signal read_wait_done : std_logic := '0';
     signal state : state_t := ST_IDLE;
     
@@ -84,6 +87,8 @@ architecture Behavioral of uart_ram_ctrl is
     
 begin
     process(clk)
+    variable L : line;
+
     begin
         if rising_edge(clk) then
             if rst='1' then
@@ -98,7 +103,11 @@ begin
                 case state is
                     when ST_IDLE =>
                         if uart_data_in_stb = '1' then
+                            write(L, string'("DATA IN STB"));
+                            writeline(output, L);
                             if uart_data_in = PRE_REQUEST then
+                                write(L, string'("PREAMBULA OK"));
+                                writeline(output, L);
                                 -- poprawna preambula
                                 state <= ST_RECV_HDR;
                             end if;

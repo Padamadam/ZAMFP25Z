@@ -1,6 +1,8 @@
 library ieee;
     use ieee.std_logic_1164.all;
     use ieee.numeric_std.all;
+use std.textio.all;
+use ieee.std_logic_textio.all;
 
 entity uart is
     generic(
@@ -127,6 +129,8 @@ begin
     data_out <= rx_reg; -- wyjście danych
 
     process(clock)
+    variable L : line;
+
     begin
         if rising_edge(clock) then
             if reset = '1' then
@@ -169,6 +173,8 @@ begin
                         -- oczekiwanie na bit stopu (powinien być = 1)
                         if baud_tick = '1' then
                             data_out_stb <= '1';  -- odebrano cały bajt
+                            hwrite(L, rx_reg);
+                            writeline(output, L);
                             rx_state <= RX_IDLE;
                         end if;
 
