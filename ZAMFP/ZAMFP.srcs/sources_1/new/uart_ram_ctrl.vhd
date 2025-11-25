@@ -103,10 +103,10 @@ begin
                 case state is
                     when ST_IDLE =>
                         if uart_data_in_stb = '1' then
-                            write(L, string'("DATA IN STB"));
+--                            write(L, string'("DATA IN STB"));
                             writeline(output, L);
                             if uart_data_in = PRE_REQUEST then
-                                write(L, string'("PREAMBULA OK"));
+--                                write(L, string'("PREAMBULA OK"));
                                 writeline(output, L);
                                 -- poprawna preambula
                                 state <= ST_RECV_HDR;

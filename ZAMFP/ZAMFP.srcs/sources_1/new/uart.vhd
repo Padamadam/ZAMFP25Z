@@ -1,123 +1,123 @@
 library ieee;
-    use ieee.std_logic_1164.all;
-    use ieee.numeric_std.all;
-use std.textio.all;
-use ieee.std_logic_textio.all;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 entity uart is
     generic(
-        baud            : positive := 115200;        -- prędkość transmisji
-        clock_frequency : positive := 50000000       -- zegar wejściowy FPGA
+        baud            : positive := 115200;
+        clock_frequency : positive := 50_000_000
     );
     port(
-        clock       : in  std_logic;                 -- zegar systemowy
-        reset       : in  std_logic;                 -- reset 
+        clock       : in  std_logic;
+        reset       : in  std_logic;
 
-        data_in     : in  std_logic_vector(7 downto 0);  -- bajt do wysłania
-        data_in_stb : in  std_logic;                     -- żądanie wysłania
-        data_in_ack : out std_logic;                     -- potwierdzenie pobrania bajtu
+        data_in     : in  std_logic_vector(7 downto 0);
+        data_in_stb : in  std_logic;
+        data_in_ack : out std_logic;
 
-        data_out    : out std_logic_vector(7 downto 0);  -- odebrany bajt
-        data_out_stb: out std_logic;                     -- sygnał bajt gotowy
+        data_out    : out std_logic_vector(7 downto 0);
+        data_out_stb: out std_logic;
 
-        tx          : out std_logic;                     -- wyjście UART
-        rx          : in  std_logic                      -- wejście UART
+        tx          : out std_logic;
+        rx          : in  std_logic
     );
 end uart;
 
 architecture rtl of uart is
 
-    -- gnerator impulsów zgodnych z baud rate
-    constant DIVIDER : integer := clock_frequency / baud;
+    -- ZMIANA: zamiast globalnego baud_tick jest stala BIT_TICKS,
+    -- a czas bitu liczony jest lokalnymi licznikami w TX i RX (od początku ramki).
+    constant BIT_TICKS : integer := clock_frequency / baud;
 
-    signal baud_cnt  : integer range 0 to DIVIDER := 0; -- licznik do generacji ticka
-    signal baud_tick : std_logic := '0';                -- impuls co 1 bit UART
+    -- TX
+    type tx_state_t is (TX_IDLE, TX_START, TX_DATA, TX_STOP);
+    signal tx_state    : tx_state_t := TX_IDLE;
+    signal tx_shift    : std_logic_vector(7 downto 0) := (others => '1');
+    signal tx_bit_idx  : integer range 0 to 7 := 0;
+    signal tx_tick_cnt : integer range 0 to BIT_TICKS := 0;  -- to ten nowy licznik
 
-    -- tx
-    type tx_state_t is (TX_IDLE, TX_START, TX_BITS, TX_STOP);
-    signal tx_state : tx_state_t := TX_IDLE;            -- aktualny stan nadajnika
-    signal tx_reg   : std_logic_vector(9 downto 0);     
-    -- 10 bitów: start(0), 8 danych, stop(1)
-    signal tx_pos   : integer range 0 to 9 := 0;        -- aktualny wysyłany bit
+    signal tx_reg      : std_logic := '1';  -- linia spoczynkowo = 1
 
-    -- rx
-    type rx_state_t is (RX_IDLE, RX_START, RX_BITS, RX_STOP);
-    signal rx_state : rx_state_t := RX_IDLE;            -- aktualny stan odbiornika
-    signal rx_reg   : std_logic_vector(7 downto 0);     -- rejestr odebranych bitów
-    signal rx_pos   : integer range 0 to 7 := 0;        -- który bit odbieramy
+    -- RX
+    type rx_state_t is (RX_IDLE, RX_START, RX_DATA, RX_STOP);
+    signal rx_state    : rx_state_t := RX_IDLE;
+    signal rx_shift    : std_logic_vector(7 downto 0) := (others => '0');
+    signal rx_bit_idx  : integer range 0 to 7 := 0;
+    signal rx_tick_cnt : integer range 0 to BIT_TICKS := 0;  -- nowy licznik
+
+    signal data_out_reg    : std_logic_vector(7 downto 0) := (others => '0');
+    signal data_out_stb_reg: std_logic := '0';
 
 begin
+    tx           <= tx_reg;
+    data_out     <= data_out_reg;
+    data_out_stb <= data_out_stb_reg;
 
-    -- ack - uart pobiera bajt tylko gdy jest w stanie IDLE
     data_in_ack <= '1' when (tx_state = TX_IDLE and data_in_stb = '1') else '0';
 
-    --nadajemy zawsze bit na pozycji tx_reg(0)
-    tx <= tx_reg(0);
-
-
-    -- tworzy impuls co DIVIDER cykli zegara
-
+    -- TX
     process(clock)
     begin
         if rising_edge(clock) then
             if reset = '1' then
-                baud_cnt  <= 0;
-                baud_tick <= '0';
-            else
-                if baud_cnt = DIVIDER then
-                    baud_cnt  <= 0;
-                    baud_tick <= '1';  -- wygeneruj impuls
-                else
-                    baud_cnt  <= baud_cnt + 1;
-                    baud_tick <= '0';
-                end if;
-            end if;
-        end if;
-    end process;
-
-    -- tx
-    process(clock)
-    begin
-        if rising_edge(clock) then
-            if reset = '1' then
-                tx_state <= TX_IDLE;
-                tx_reg   <= (others => '1');   -- linia TX spoczywa w stanie '1'
-                tx_pos   <= 0;
-
+                tx_state    <= TX_IDLE;
+                tx_reg      <= '1';
+                tx_shift    <= (others => '1');
+                tx_bit_idx  <= 0;
+                tx_tick_cnt <= 0;  
             else
                 case tx_state is
 
                     when TX_IDLE =>
-                        -- oczekujemy na sygnał wysłania
+                        tx_reg      <= '1';
+                        tx_tick_cnt <= 0;  -- jak nie dziala to niech bedzie 0
+
                         if data_in_stb = '1' then
-                            -- składamy pełną ramkę UART: start (0), 8 bitów danych, stop (1)
-                            tx_reg <= '1' & data_in & '0';  -- LSB wysyłane jako pierwsze
-                            tx_pos <= 0;
-                            tx_state <= TX_START;
+                            -- ZMIANA: ładujemy bajt i od razu wymuszamy start bit (0),
+                            tx_shift    <= data_in;
+                            tx_bit_idx  <= 0;
+                            tx_reg      <= '0';  -- start bit
+                            tx_tick_cnt <= 0; -- bardzo wazne : wyzerowanie licznika bitu na poczatku startu ramki
+                            tx_state    <= TX_START;
                         end if;
 
                     when TX_START =>
-                        -- wysyłamy pierwszy bit ramki (bit startu = 0)
-                        if baud_tick = '1' then
-                            tx_state <= TX_BITS;
+                        -- ZMIANA: start bit trwa dokładnie BIT_TICKS cykli od momentu startu,
+                        -- a nie "do kolejnego globalnego baud_tick".
+                        if tx_tick_cnt = BIT_TICKS - 1 then
+                            tx_tick_cnt <= 0;
+                            tx_state    <= TX_DATA;
+                            tx_reg      <= tx_shift(0);  -- pierwszy bit danych (LSB)
+                        else
+                            tx_tick_cnt <= tx_tick_cnt + 1;
                         end if;
 
-                    when TX_BITS =>
-                        -- przesuwamy rejestr, wysyłamy kolejne bity danych
-                        if baud_tick = '1' then
-                            tx_reg <= '1' & tx_reg(9 downto 1);
+                    when TX_DATA =>
+                        if tx_tick_cnt = BIT_TICKS - 1 then
+                            tx_tick_cnt <= 0;
 
-                            if tx_pos = 8 then         -- wszystkie dane wysłane
-                                tx_state <= TX_STOP;
+                            if tx_bit_idx = 7 then
+                                tx_reg     <= '1';   -- stop bit
+                                tx_state   <= TX_STOP;
                             else
-                                tx_pos <= tx_pos + 1;
+                                -- przesuwanie
+                                tx_bit_idx <= tx_bit_idx + 1;
+                                tx_shift   <= '0' & tx_shift(7 downto 1);  -- przesunięcie w prawo
+                                tx_reg     <= tx_shift(1);  -- kolejny LSB po przesunięciu
                             end if;
+                        else
+                            tx_tick_cnt <= tx_tick_cnt + 1;
                         end if;
 
                     when TX_STOP =>
-                        -- wysyłamy bit stopu (1)
-                        if baud_tick = '1' then
-                            tx_state <= TX_IDLE;
+                        -- ZMIANA: bit stopu też ma dokładnie BIT_TICKS cykli,
+                        -- liczonych lokalnie, zamiast polegania na globalnym ticku.
+                        if tx_tick_cnt = BIT_TICKS - 1 then
+                            tx_tick_cnt <= 0;
+                            tx_state    <= TX_IDLE;
+                            tx_reg      <= '1';
+                        else
+                            tx_tick_cnt <= tx_tick_cnt + 1;
                         end if;
 
                 end case;
@@ -125,62 +125,70 @@ begin
         end if;
     end process;
 
-    -- rx
-    data_out <= rx_reg; -- wyjście danych
-
+    -- RX
     process(clock)
-    variable L : line;
-
     begin
         if rising_edge(clock) then
             if reset = '1' then
-                rx_state <= RX_IDLE;
-                rx_reg <= (others => '0');
-                rx_pos <= 0;
-                data_out_stb <= '0';
-
+                rx_state        <= RX_IDLE;
+                rx_shift        <= (others => '0');
+                rx_bit_idx      <= 0;
+                rx_tick_cnt     <= 0;
+                data_out_reg    <= (others => '0');
+                data_out_stb_reg<= '0';
             else
-                data_out_stb <= '0'; -- domyślnie brak nowego bajtu
+                data_out_stb_reg <= '0';
 
                 case rx_state is
 
                     when RX_IDLE =>
-                        -- czekamy na start bit (linia opada do 0)
+                        rx_tick_cnt <= 0;
                         if rx = '0' then
-                            rx_state <= RX_START;
+                            rx_state    <= RX_START;
+                            rx_tick_cnt <= 0;
                         end if;
 
                     when RX_START =>
-                        -- potwierdzenie start bitu
-                        if baud_tick = '1' then
-                            rx_pos <= 0;
-                            rx_state <= RX_BITS;
+                        -- ZMIANA: czekamy ~pół bitu od momentu wykrycia startu,
+                        -- żeby dalej próbkując co BIT_TICKS trafić w środki bitów danych.
+                        if rx_tick_cnt = (BIT_TICKS-1)/2 then
+                            rx_tick_cnt <= 0;
+                            rx_bit_idx  <= 0;
+                            rx_state    <= RX_DATA;
+                        else
+                            rx_tick_cnt <= rx_tick_cnt + 1;
                         end if;
 
-                    when RX_BITS =>
-                        -- wczytywanie kolejnych bitów danych
-                        if baud_tick = '1' then
-                            rx_reg <= rx & rx_reg(7 downto 1);
+                    when RX_DATA =>
+                        if rx_tick_cnt = BIT_TICKS - 1 then
+                            rx_tick_cnt <= 0;
 
-                            if rx_pos = 7 then
+                            -- ZMIANA: próbkujemy środek bitu danych (co BIT_TICKS od 0.5 bitu),
+                            -- dzięki temu pierwszy odczyt to bit0, a nie start.
+                            rx_shift <= rx & rx_shift(7 downto 1);
+
+                            if rx_bit_idx = 7 then
                                 rx_state <= RX_STOP;
                             else
-                                rx_pos <= rx_pos + 1;
+                                rx_bit_idx <= rx_bit_idx + 1;
                             end if;
+                        else
+                            rx_tick_cnt <= rx_tick_cnt + 1;
                         end if;
 
                     when RX_STOP =>
-                        -- oczekiwanie na bit stopu (powinien być = 1)
-                        if baud_tick = '1' then
-                            data_out_stb <= '1';  -- odebrano cały bajt
-                            hwrite(L, rx_reg);
-                            writeline(output, L);
-                            rx_state <= RX_IDLE;
+                        -- ZMIANA: bit stopu też liczony lokalnie rx_tick_cnt a nie baud_tick
+                        if rx_tick_cnt = BIT_TICKS - 1 then
+                            rx_tick_cnt  <= 0;
+                            data_out_reg <= rx_shift;
+                            data_out_stb_reg <= '1';  -- pełny bajt gotowy
+                            rx_state     <= RX_IDLE;
+                        else
+                            rx_tick_cnt <= rx_tick_cnt + 1;
                         end if;
 
                 end case;
             end if;
         end if;
     end process;
-
 end rtl;

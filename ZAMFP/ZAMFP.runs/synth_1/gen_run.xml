@@ -71,6 +71,6 @@
     <Step Id="synth_design"/>
   </Strategy>
   <BlockFileSet Type="BlockSrcs" Name="system_uart_ram_ctrl_0_0"/>
-  <BlockFileSet Type="BlockSrcs" Name="system_uart_0_0"/>
   <BlockFileSet Type="BlockSrcs" Name="system_ram_0_0"/>
+  <BlockFileSet Type="BlockSrcs" Name="system_uart_0_0"/>
 </GenRun>
