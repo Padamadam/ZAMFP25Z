@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 entity uart is
     generic(
-        baud            : positive := 115200;
+        baud            : positive := 9600;
         clock_frequency : positive := 50_000_000
     );
     port(
@@ -27,14 +27,18 @@ architecture rtl of uart is
 
     -- ZMIANA: zamiast globalnego baud_tick jest stala BIT_TICKS,
     -- a czas bitu liczony jest lokalnymi licznikami w TX i RX (od początku ramki).
-    constant BIT_TICKS : integer := clock_frequency / baud;
+    signal BIT_TICKS : integer := clock_frequency / baud;
+
+
+
+    
 
     -- TX
     type tx_state_t is (TX_IDLE, TX_START, TX_DATA, TX_STOP);
     signal tx_state    : tx_state_t := TX_IDLE;
     signal tx_shift    : std_logic_vector(7 downto 0) := (others => '1');
-    signal tx_bit_idx  : integer range 0 to 7 := 0;
-    signal tx_tick_cnt : integer range 0 to BIT_TICKS := 0;  -- to ten nowy licznik
+    signal tx_bit_idx  : integer  := 0;
+    signal tx_tick_cnt : integer  := 0;  -- to ten nowy licznik ZMIANA - USUNIECIE RANGE BO NIEPOTRZEBNE
 
     signal tx_reg      : std_logic := '1';  -- linia spoczynkowo = 1
 
@@ -43,10 +47,17 @@ architecture rtl of uart is
     signal rx_state    : rx_state_t := RX_IDLE;
     signal rx_shift    : std_logic_vector(7 downto 0) := (others => '0');
     signal rx_bit_idx  : integer range 0 to 7 := 0;
-    signal rx_tick_cnt : integer range 0 to BIT_TICKS := 0;  -- nowy licznik
+    signal rx_tick_cnt : integer  := 0;  -- nowy licznik TAK JAK WYZEJ
 
     signal data_out_reg    : std_logic_vector(7 downto 0) := (others => '0');
     signal data_out_stb_reg: std_logic := '0';
+    
+
+signal auto_tick_cnt  : integer := 0;
+signal auto_baud_done : std_logic := '0';
+signal prev_rx        : std_logic := '1';
+signal bit_idx        : integer := 0;
+
 
 begin
     tx           <= tx_reg;
@@ -54,6 +65,75 @@ begin
     data_out_stb <= data_out_stb_reg;
 
     data_in_ack <= '1' when (tx_state = TX_IDLE and data_in_stb = '1') else '0';
+
+    --autobaud
+process(clock)
+    constant pattern_55_bits : std_logic_vector(7 downto 0) := "01010101"; 
+    variable prev_rx_bit     : std_logic := '1';
+    variable last_edge_cnt   : integer := 0;
+    variable bit_idx         : integer := 0;
+    variable first_period    : integer := 0;
+    variable measuring       : boolean := false;
+begin
+    if rising_edge(clock) then
+        if reset = '1' then
+            BIT_TICKS      <= clock_frequency / 115200; -- default
+            auto_tick_cnt  <= 0;
+            prev_rx_bit    := '1';
+            last_edge_cnt  := 0;
+            bit_idx        := 0;
+            first_period   := 0;
+            measuring      := false;
+            auto_baud_done <= '0';
+        else
+            if auto_baud_done = '0' then
+                auto_tick_cnt <= auto_tick_cnt + 1;
+
+                -- wykrycie zbocza
+                if prev_rx_bit /= rx then
+                    if not measuring then
+                        -- pierwsze zbocze (start bit)
+                        measuring := true;
+                        auto_tick_cnt <= 0;
+                        bit_idx := 0;
+                    else
+                        -- kolejne zbocze -> okres obecnego bitu
+                        if bit_idx = 0 then
+                            -- zapisujemy pierwszy okres
+                            first_period := auto_tick_cnt;
+                            auto_tick_cnt <= 0;
+                            bit_idx := 1;
+                        else
+                            -- porównujemy z pierwszym okresem
+                            if abs(auto_tick_cnt - first_period) <= 1 then
+                                -- zgadza się (tolerancja 1 cykl)
+                                auto_tick_cnt <= 0;
+                                bit_idx := bit_idx + 1;
+                            else
+                                -- błąd, reset
+                                measuring := false;
+                                bit_idx := 0;
+                                auto_tick_cnt <= 0;
+                            end if;
+                        end if;
+
+                        -- jeśli 8 okresów poprawnych
+                        if bit_idx = 8 then
+                            BIT_TICKS <= first_period;
+                            auto_baud_done <= '1';
+                            measuring := false;
+                            bit_idx := 0;
+                        end if;
+                    end if;
+                    prev_rx_bit := rx;
+                    auto_tick_cnt <= 0; -- reset licznika po zboczu
+                end if;
+            end if;
+        end if;
+    end if;
+end process;
+
+
 
     -- TX
     process(clock)

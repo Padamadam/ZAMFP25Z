@@ -11,14 +11,14 @@
    </db_ref_list>
    <zoom_setting>
       <ZoomStartTime time="0.000000 us"></ZoomStartTime>
-      <ZoomEndTime time="670.000001 us"></ZoomEndTime>
-      <Cursor1Time time="302.500000 us"></Cursor1Time>
+      <ZoomEndTime time="1,340.000001 us"></ZoomEndTime>
+      <Cursor1Time time="474.000000 us"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="161"></NameColumnWidth>
       <ValueColumnWidth column_width="58"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="19" />
+   <WVObjectSize size="13" />
    <wvobject fp_name="/system_tb/mon_data_out" type="array">
       <obj_property name="ElementShortName">mon_data_out[7:0]</obj_property>
       <obj_property name="ObjectShortName">mon_data_out[7:0]</obj_property>
@@ -26,10 +26,6 @@
    <wvobject fp_name="/system_tb/mon_data_out_stb" type="logic">
       <obj_property name="ElementShortName">mon_data_out_stb</obj_property>
       <obj_property name="ObjectShortName">mon_data_out_stb</obj_property>
-   </wvobject>
-   <wvobject fp_name="/system_tb/mon_data_in_ack" type="logic">
-      <obj_property name="ElementShortName">mon_data_in_ack</obj_property>
-      <obj_property name="ObjectShortName">mon_data_in_ack</obj_property>
    </wvobject>
    <wvobject fp_name="/system_tb/clk" type="logic">
       <obj_property name="ElementShortName">clk</obj_property>
@@ -59,30 +55,6 @@
       <obj_property name="ElementShortName">baud_cycles</obj_property>
       <obj_property name="ObjectShortName">baud_cycles</obj_property>
    </wvobject>
-   <wvobject fp_name="/system_tb/dut/uart_i/BIT_TICKS" type="other">
-      <obj_property name="ElementShortName">BIT_TICKS</obj_property>
-      <obj_property name="ObjectShortName">BIT_TICKS</obj_property>
-   </wvobject>
-   <wvobject fp_name="/system_tb/dut/uart_i/ab_state" type="other">
-      <obj_property name="ElementShortName">ab_state</obj_property>
-      <obj_property name="ObjectShortName">ab_state</obj_property>
-   </wvobject>
-   <wvobject fp_name="/system_tb/dut/uart_i/rx_state" type="other">
-      <obj_property name="ElementShortName">rx_state</obj_property>
-      <obj_property name="ObjectShortName">rx_state</obj_property>
-   </wvobject>
-   <wvobject fp_name="/system_tb/dut/uart_i/tx_state" type="other">
-      <obj_property name="ElementShortName">tx_state</obj_property>
-      <obj_property name="ObjectShortName">tx_state</obj_property>
-   </wvobject>
-   <wvobject fp_name="/system_tb/dut/uart_i/data_out" type="array">
-      <obj_property name="ElementShortName">data_out[7:0]</obj_property>
-      <obj_property name="ObjectShortName">data_out[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/system_tb/dut/uart_i/data_in" type="array">
-      <obj_property name="ElementShortName">data_in[7:0]</obj_property>
-      <obj_property name="ObjectShortName">data_in[7:0]</obj_property>
-   </wvobject>
    <wvobject fp_name="/system_tb/dut/uart_i/tx_shift" type="array">
       <obj_property name="ElementShortName">tx_shift[7:0]</obj_property>
       <obj_property name="ObjectShortName">tx_shift[7:0]</obj_property>
@@ -91,8 +63,12 @@
       <obj_property name="ElementShortName">rx_shift[7:0]</obj_property>
       <obj_property name="ObjectShortName">rx_shift[7:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/system_tb/uart_monitor/data_out_stb" type="logic">
-      <obj_property name="ElementShortName">data_out_stb</obj_property>
-      <obj_property name="ObjectShortName">data_out_stb</obj_property>
+   <wvobject fp_name="/system_tb/dut/uart_i/tx_state" type="other">
+      <obj_property name="ElementShortName">tx_state</obj_property>
+      <obj_property name="ObjectShortName">tx_state</obj_property>
+   </wvobject>
+   <wvobject fp_name="/system_tb/dut/uart_i/rx_state" type="other">
+      <obj_property name="ElementShortName">rx_state</obj_property>
+      <obj_property name="ObjectShortName">rx_state</obj_property>
    </wvobject>
 </wave_config>

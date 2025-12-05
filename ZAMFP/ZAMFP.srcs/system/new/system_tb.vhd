@@ -41,7 +41,7 @@ end system_tb;
 architecture sim of system_tb is
     constant Tclk : time := 20ns; -- 50Mhz
     constant clock_frequency : integer := 50000000; -- 50MHz
-    constant baud   : integer := 115200;
+    constant baud   : integer := 21370;
     constant baud_cycles : integer := clock_frequency / baud;
     constant bit_period : time := Tclk * (baud_cycles);
     
@@ -123,6 +123,7 @@ begin
                 wait for bit_period; -- jedna przerwa miedzy bajtami, dla czytelnosci;
             end procedure;    
             
+            
 --            procedure uart_recv_byte(   -- procedura ktora przetworzy bajty otrzymane z linii tx od systemu
 --                signal tx : in std_logic;
 --                variable data : out std_logic_vector(7 downto 0)) is
@@ -150,6 +151,10 @@ begin
         -- test generalny
         begin
             wait until rst = '0';
+            
+            uart_send_byte(rx_0, x"55");
+            wait for 5*bit_period;
+            uart_send_byte(tx_0, x"55");
             
             wait for 5*bit_period;
             
@@ -260,6 +265,12 @@ begin
                     severity error;
             
             end loop;
+            
+            
+            
+            
+            
+            
             wait; -- KONIEC
    
         end process;
