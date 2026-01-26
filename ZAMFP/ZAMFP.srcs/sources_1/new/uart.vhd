@@ -28,11 +28,7 @@ architecture rtl of uart is
     -- ZMIANA: zamiast globalnego baud_tick jest stala BIT_TICKS,
     -- a czas bitu liczony jest lokalnymi licznikami w TX i RX (od początku ramki).
     signal BIT_TICKS : integer := clock_frequency / baud;
-
-
-
     
-
     -- TX
     type tx_state_t is (TX_IDLE, TX_START, TX_DATA, TX_STOP);
     signal tx_state    : tx_state_t := TX_IDLE;
@@ -52,38 +48,36 @@ architecture rtl of uart is
     signal data_out_reg    : std_logic_vector(7 downto 0) := (others => '0');
     signal data_out_stb_reg: std_logic := '0';
     
-
-signal auto_tick_cnt  : integer := 0;
-signal auto_baud_done : std_logic := '0';
-signal prev_rx        : std_logic := '1';
-signal bit_idx        : integer := 0;
-
+    --autobaud
+    signal auto_tick_cnt  : integer := 0;
+    signal auto_baud_done : std_logic := '0';
+    signal prev_rx        : std_logic := '1';
+    signal bit_idx        : integer := 0;
+    signal prev_rx_bit     : std_logic := '1';
+    signal last_edge_cnt   : integer := 0;
+    signal first_period    : integer := 0;
+    signal measuring       : std_logic  := '0';
 
 begin
     tx           <= tx_reg;
     data_out     <= data_out_reg;
     data_out_stb <= data_out_stb_reg;
-
     data_in_ack <= '1' when (tx_state = TX_IDLE and data_in_stb = '1') else '0';
 
     --autobaud
 process(clock)
     constant pattern_55_bits : std_logic_vector(7 downto 0) := "01010101"; 
-    variable prev_rx_bit     : std_logic := '1';
-    variable last_edge_cnt   : integer := 0;
-    variable bit_idx         : integer := 0;
-    variable first_period    : integer := 0;
-    variable measuring       : boolean := false;
+    
 begin
     if rising_edge(clock) then
         if reset = '1' then
-            BIT_TICKS      <= clock_frequency / 115200; -- default
+            BIT_TICKS      <= clock_frequency / 115200; -- default --ciężko tutaj bez dzielenia
             auto_tick_cnt  <= 0;
-            prev_rx_bit    := '1';
-            last_edge_cnt  := 0;
-            bit_idx        := 0;
-            first_period   := 0;
-            measuring      := false;
+            prev_rx_bit    <= '1';
+            last_edge_cnt  <= 0;
+            bit_idx        <= 0;
+            first_period   <= 0;
+            measuring      <= '0';
             auto_baud_done <= '0';
         else
             if auto_baud_done = '0' then
@@ -91,28 +85,28 @@ begin
 
                 -- wykrycie zbocza
                 if prev_rx_bit /= rx then
-                    if not measuring then
+                    if measuring = '0' then
                         -- pierwsze zbocze (start bit)
-                        measuring := true;
+                        measuring <= '1';
                         auto_tick_cnt <= 0;
-                        bit_idx := 0;
+                        bit_idx <= 0;
                     else
                         -- kolejne zbocze -> okres obecnego bitu
                         if bit_idx = 0 then
                             -- zapisujemy pierwszy okres
-                            first_period := auto_tick_cnt;
+                            first_period <= auto_tick_cnt;
                             auto_tick_cnt <= 0;
-                            bit_idx := 1;
+                            bit_idx <= 1;
                         else
                             -- porównujemy z pierwszym okresem
                             if abs(auto_tick_cnt - first_period) <= 1 then
                                 -- zgadza się (tolerancja 1 cykl)
                                 auto_tick_cnt <= 0;
-                                bit_idx := bit_idx + 1;
+                                bit_idx <= bit_idx + 1;
                             else
                                 -- błąd, reset
-                                measuring := false;
-                                bit_idx := 0;
+                                measuring <= '0';
+                                bit_idx <= 0;
                                 auto_tick_cnt <= 0;
                             end if;
                         end if;
@@ -121,11 +115,11 @@ begin
                         if bit_idx = 8 then
                             BIT_TICKS <= first_period;
                             auto_baud_done <= '1';
-                            measuring := false;
-                            bit_idx := 0;
+                            measuring <= '0';
+                            bit_idx <= 0;
                         end if;
                     end if;
-                    prev_rx_bit := rx;
+                    prev_rx_bit <= rx;
                     auto_tick_cnt <= 0; -- reset licznika po zboczu
                 end if;
             end if;
@@ -169,7 +163,7 @@ end process;
                             tx_state    <= TX_DATA;
                             tx_reg      <= tx_shift(0);  -- pierwszy bit danych (LSB)
                         else
-                            tx_tick_cnt <= tx_tick_cnt + 1;
+                            tx_tick_cnt <= tx_tick_cnt + 1; --!!!!!!!!!!!!!!!!!!!! DO ZMIANY
                         end if;
 
                     when TX_DATA =>
@@ -186,7 +180,7 @@ end process;
                                 tx_reg     <= tx_shift(1);  -- kolejny LSB po przesunięciu
                             end if;
                         else
-                            tx_tick_cnt <= tx_tick_cnt + 1;
+                            tx_tick_cnt <= tx_tick_cnt + 1; --!!!!!!!!!!!!!!!!!!!! DO ZMIANY
                         end if;
 
                     when TX_STOP =>
@@ -197,7 +191,7 @@ end process;
                             tx_state    <= TX_IDLE;
                             tx_reg      <= '1';
                         else
-                            tx_tick_cnt <= tx_tick_cnt + 1;
+                            tx_tick_cnt <= tx_tick_cnt + 1; --!!!!!!!!!!!!!!!!!!!! DO ZMIANY
                         end if;
 
                 end case;
@@ -236,7 +230,7 @@ end process;
                             rx_bit_idx  <= 0;
                             rx_state    <= RX_DATA;
                         else
-                            rx_tick_cnt <= rx_tick_cnt + 1;
+                            rx_tick_cnt <= rx_tick_cnt + 1; --!!!!!!!!!!!!!!!!!!!! DO ZMIANY
                         end if;
 
                     when RX_DATA =>
@@ -245,12 +239,12 @@ end process;
 
                             -- ZMIANA: próbkujemy środek bitu danych (co BIT_TICKS od 0.5 bitu),
                             -- dzięki temu pierwszy odczyt to bit0, a nie start.
-                            rx_shift <= rx & rx_shift(7 downto 1);
+                            rx_shift <= rx & rx_shift(7 downto 1); --!!!!!!!!!!!!!!!!!!!! DO ZMIANY
 
                             if rx_bit_idx = 7 then
                                 rx_state <= RX_STOP;
                             else
-                                rx_bit_idx <= rx_bit_idx + 1;
+                                rx_bit_idx <= rx_bit_idx + 1; --!!!!!!!!!!!!!!!!!!!! DO ZMIANY
                             end if;
                         else
                             rx_tick_cnt <= rx_tick_cnt + 1;

@@ -5687,3 +5687,8 @@ run all
 
 
 
+save_wave_config {C:/Users/Mateusz Kozlowski/Documents/zampf/ZAMFP/system_tb_behav.wcfg}
+close_sim
+INFO: [Simtcl 6-16] Simulation closed
+exit
+INFO: [Common 17-206] Exiting Vivado at Fri Dec  5 22:34:41 2025...

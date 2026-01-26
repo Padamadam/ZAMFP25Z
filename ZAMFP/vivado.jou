@@ -1032,3 +1032,5 @@ relaunch_sim
 run all
 relaunch_sim
 run all
+save_wave_config {C:/Users/Mateusz Kozlowski/Documents/zampf/ZAMFP/system_tb_behav.wcfg}
+close_sim

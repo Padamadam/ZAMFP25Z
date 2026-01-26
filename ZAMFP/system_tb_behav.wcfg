@@ -10,15 +10,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
-      <ZoomEndTime time="1,340.000001 us"></ZoomEndTime>
-      <Cursor1Time time="474.000000 us"></Cursor1Time>
+      <ZoomStartTime time="129.650343334 ms"></ZoomStartTime>
+      <ZoomEndTime time="244.050343335 ms"></ZoomEndTime>
+      <Cursor1Time time="148.717010000 ms"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="161"></NameColumnWidth>
+      <NameColumnWidth column_width="157"></NameColumnWidth>
       <ValueColumnWidth column_width="58"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="13" />
+   <WVObjectSize size="20" />
    <wvobject fp_name="/system_tb/mon_data_out" type="array">
       <obj_property name="ElementShortName">mon_data_out[7:0]</obj_property>
       <obj_property name="ObjectShortName">mon_data_out[7:0]</obj_property>
@@ -58,10 +58,12 @@
    <wvobject fp_name="/system_tb/dut/uart_i/tx_shift" type="array">
       <obj_property name="ElementShortName">tx_shift[7:0]</obj_property>
       <obj_property name="ObjectShortName">tx_shift[7:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject fp_name="/system_tb/dut/uart_i/rx_shift" type="array">
       <obj_property name="ElementShortName">rx_shift[7:0]</obj_property>
       <obj_property name="ObjectShortName">rx_shift[7:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
    </wvobject>
    <wvobject fp_name="/system_tb/dut/uart_i/tx_state" type="other">
       <obj_property name="ElementShortName">tx_state</obj_property>
@@ -70,5 +72,33 @@
    <wvobject fp_name="/system_tb/dut/uart_i/rx_state" type="other">
       <obj_property name="ElementShortName">rx_state</obj_property>
       <obj_property name="ObjectShortName">rx_state</obj_property>
+   </wvobject>
+   <wvobject fp_name="/system_tb/dut/uart_i/tx_tick_cnt" type="other">
+      <obj_property name="ElementShortName">tx_tick_cnt</obj_property>
+      <obj_property name="ObjectShortName">tx_tick_cnt</obj_property>
+   </wvobject>
+   <wvobject fp_name="/system_tb/dut/uart_i/rx_tick_cnt" type="other">
+      <obj_property name="ElementShortName">rx_tick_cnt</obj_property>
+      <obj_property name="ObjectShortName">rx_tick_cnt</obj_property>
+   </wvobject>
+   <wvobject fp_name="/system_tb/dut/uart_i/BIT_TICKS" type="other">
+      <obj_property name="ElementShortName">BIT_TICKS</obj_property>
+      <obj_property name="ObjectShortName">BIT_TICKS</obj_property>
+   </wvobject>
+   <wvobject fp_name="/system_tb/uart_monitor/BIT_TICKS" type="other">
+      <obj_property name="ElementShortName">BIT_TICKS</obj_property>
+      <obj_property name="ObjectShortName">BIT_TICKS</obj_property>
+   </wvobject>
+   <wvobject fp_name="/system_tb/bit_period" type="other">
+      <obj_property name="ElementShortName">bit_period</obj_property>
+      <obj_property name="ObjectShortName">bit_period</obj_property>
+   </wvobject>
+   <wvobject fp_name="/system_tb/dut/uart_i/baud" type="other">
+      <obj_property name="ElementShortName">baud</obj_property>
+      <obj_property name="ObjectShortName">baud</obj_property>
+   </wvobject>
+   <wvobject fp_name="/system_tb/dut/uart_i/auto_tick_cnt" type="other">
+      <obj_property name="ElementShortName">auto_tick_cnt</obj_property>
+      <obj_property name="ObjectShortName">auto_tick_cnt</obj_property>
    </wvobject>
 </wave_config>
